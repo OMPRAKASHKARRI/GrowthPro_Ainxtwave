@@ -154,6 +154,5 @@ This project follows modern React and Node.js best practices:
 - Error handling and validation
 - Responsive design principles
 
-## 📄 License
-
-This project is for demonstration purposes as part of a technical assessment.
+Email your submission to: [omvaradhan@gmail.com]
+Subject: Submission – Full Stack Intern Assignment – [OM PRAKASH KARRI]
