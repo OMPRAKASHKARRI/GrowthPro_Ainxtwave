@@ -1,6 +1,9 @@
 import { BusinessData, BusinessFormData, HeadlineResponse } from '../types/business';
 
-const API_BASE_URL = 'http://localhost:3001';
+// Update this URL with your deployed Render backend URL
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://your-app-name.onrender.com'  // Replace with your actual Render URL
+  : 'http://localhost:3001';
 
 export const businessApi = {
   // Submit business data and get initial results
@@ -14,6 +17,8 @@ export const businessApi = {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
       throw new Error('Failed to fetch business data');
     }
 
@@ -27,6 +32,8 @@ export const businessApi = {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
       throw new Error('Failed to regenerate headline');
     }
 

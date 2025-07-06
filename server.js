@@ -5,8 +5,26 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://your-frontend-domain.netlify.app', 'https://your-frontend-domain.com']
+    : ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
+
+// Health check endpoint (should be first)
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Business Dashboard API is running',
+    timestamp: new Date().toISOString() 
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 // Sample headlines for different business types
 const sampleHeadlines = [
@@ -62,6 +80,7 @@ app.post('/business-data', (req, res) => {
     }, 1000); // 1 second delay to show loading state
 
   } catch (error) {
+    console.error('Error in /business-data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -88,15 +107,23 @@ app.get('/regenerate-headline', (req, res) => {
     }, 800); // Slightly faster for regeneration
 
   } catch (error) {
+    console.error('Error in /regenerate-headline:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
